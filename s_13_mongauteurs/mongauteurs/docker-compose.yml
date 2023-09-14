@@ -1,0 +1,39 @@
+version: '3.8'
+
+services:
+
+  mongo:
+    image: mongo
+    container_name: mongodb
+
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      ME_CONFIG_MONGODB_URL: "mongodb://root:example@mongo:27017/?useUnifiedTopology=true"  # Add useUnifiedTopology here  
+
+    volumes:
+      - mongodb-data:/data/db
+    networks:
+      - mongodb_network
+    ports:
+      - 27018:27017    # 27017 is used by mongod
+
+
+
+  flask-app:
+    build:
+      context: ./app
+    restart: always
+    ports:
+      - 5000:5000    
+    depends_on:
+      - mongo
+    networks:
+      - mongodb_network
+
+# networks:
+#   mongodb_network:
+
+# volumes:
+#   mongodb-data:
